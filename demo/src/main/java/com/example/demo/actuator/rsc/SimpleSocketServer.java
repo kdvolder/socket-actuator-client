@@ -13,33 +13,35 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.stereotype.Component;
+import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
+import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-@ConditionalOnProperty(name = "spring.actuator.socket.enabled")
-@Component
 public class SimpleSocketServer implements InitializingBean, DisposableBean {
 
 	private static final Logger log = LoggerFactory.getLogger(SimpleSocketServer.class);
+
+	private static final int SOCKET_TIMEOUT = 5000;
 	
-	@Autowired
-	ActuatorSocketProperties props;
-	
+	SocktuatorServerProperties props;
 	private ObjectMapper mapper = new ObjectMapper();
 	private ServerSocket serverSocket;
 
 	Map<String, RscOperation> operationsIdx = new HashMap<>();
 
-	public SimpleSocketServer(RscEndpointsSupplier endpointSupplier) {
+	public SimpleSocketServer(
+			RscEndpointsSupplier endpointSupplier,
+			SocktuatorServerProperties props
+	) {
+		this.props = props;
 		Collection<ExposableRscEndpoint> endpoints = endpointSupplier.getEndpoints();
 		for (ExposableRscEndpoint ep : endpoints) {
 			Collection<RscOperation> ops = ep.getOperations();
@@ -54,11 +56,15 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		serverSocket = new ServerSocket(props.getPort());
-		{
-			Thread t = new Thread(() -> handleIncomingRequests());
-			t.setDaemon(true);
-			t.start();
+		if (props.isEnabled()) {
+			serverSocket = new ServerSocket(props.getPort());
+			{
+				Thread t = new Thread(() -> handleIncomingRequests());
+				t.setDaemon(true);
+				t.start();
+			}
+		} else {
+			log.warn("Possible (auto)config bug: this bean should not exist because ");
 		}
 	}
 
@@ -96,6 +102,7 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 	private Object handleIncomingRequests() {
 		while (serverSocket!=null) {
 			try (Socket clientSocket = serverSocket.accept()) {
+				clientSocket.setSoTimeout(SOCKET_TIMEOUT);
 				InputStream input = StreamUtils.nonClosing(clientSocket.getInputStream());
 				OutputStream out = StreamUtils.nonClosing(clientSocket.getOutputStream());
 				try {
@@ -103,9 +110,20 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 					log.info("Request received: "+operationId);
 					RscOperation op = operationsIdx.get(operationId);
 					if (op!=null) {
-						Assert.isTrue(!op.getParameters().hasParameters(), "Operations with parameters are not yet supported");
-						InvocationContext ctx = new InvocationContext(SecurityContext.NONE, Map.of());
-						Object result = op.invoke(ctx);
+						OperationParameters params = op.getParameters();
+						HashMap<String,Object> paramValues = new HashMap<>();
+						if (op.getParameters().hasParameters()) {
+							JsonNode jsonParamValues = mapper.readTree(input);
+							for (OperationParameter param : params) {
+								String name = param.getName();
+								JsonNode jsonParamVal = jsonParamValues.get(name);
+								if (jsonParamVal!=null) {
+									Object paramVal = mapper.convertValue(jsonParamVal, param.getType());
+									paramValues.put(name, paramVal);
+								}
+							}
+						}
+						Object result = op.invoke(new InvocationContext(SecurityContext.NONE, paramValues));
 						send(out, Response.ok(result));
 					}
 				} catch (Exception e) {
