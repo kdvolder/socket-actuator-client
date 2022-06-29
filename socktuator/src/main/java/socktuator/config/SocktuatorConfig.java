@@ -12,9 +12,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import socktuator.discovery.ExposableRscEndpoint;
+import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointDiscoverer;
-import socktuator.discovery.RscEndpointsSupplier;
+import socktuator.discovery.SocktuatorEndpointsSupplier;
 import socktuator.server.SimpleSocketServer;
 
 @Configuration
@@ -29,7 +29,7 @@ public class SocktuatorConfig {
 	
 	@ConditionalOnProperty(name = "socktuator.server.enabled")
 	@Bean
-	SimpleSocketServer socketActuatorServer(RscEndpointsSupplier endpoints, SocktuatorServerProperties props) {
+	SimpleSocketServer socketActuatorServer(SocktuatorEndpointsSupplier endpoints, SocktuatorServerProperties props) {
 		return new SimpleSocketServer(endpoints, props);
 	}
 	
@@ -37,7 +37,7 @@ public class SocktuatorConfig {
 	@Bean
 	public SocktuatorEndpointDiscoverer rscAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
-			ObjectProvider<EndpointFilter<ExposableRscEndpoint>> filters) {
+			ObjectProvider<EndpointFilter<ExposableSocktuatorEndpoint>> filters) {
 		return new SocktuatorEndpointDiscoverer(this.applicationContext, parameterValueMapper,
 				invokerAdvisors.orderedStream().collect(Collectors.toList()),
 				filters.orderedStream().collect(Collectors.toList()));

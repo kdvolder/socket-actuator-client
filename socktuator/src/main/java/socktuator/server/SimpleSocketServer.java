@@ -26,9 +26,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import socktuator.config.SocktuatorServerProperties;
-import socktuator.discovery.ExposableRscEndpoint;
-import socktuator.discovery.RscEndpointsSupplier;
-import socktuator.discovery.RscOperation;
+import socktuator.discovery.ExposableSocktuatorEndpoint;
+import socktuator.discovery.SocktuatorEndpointsSupplier;
+import socktuator.discovery.SocktuatorOperation;
 
 public class SimpleSocketServer implements InitializingBean, DisposableBean {
 
@@ -40,17 +40,17 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 	private ObjectMapper mapper = new ObjectMapper();
 	private ServerSocket serverSocket;
 
-	Map<String, RscOperation> operationsIdx = new HashMap<>();
+	Map<String, SocktuatorOperation> operationsIdx = new HashMap<>();
 
 	public SimpleSocketServer(
-			RscEndpointsSupplier endpointSupplier,
+			SocktuatorEndpointsSupplier endpointSupplier,
 			SocktuatorServerProperties props
 	) {
 		this.props = props;
-		Collection<ExposableRscEndpoint> endpoints = endpointSupplier.getEndpoints();
-		for (ExposableRscEndpoint ep : endpoints) {
-			Collection<RscOperation> ops = ep.getOperations();
-			for (RscOperation op : ops) {
+		Collection<ExposableSocktuatorEndpoint> endpoints = endpointSupplier.getEndpoints();
+		for (ExposableSocktuatorEndpoint ep : endpoints) {
+			Collection<SocktuatorOperation> ops = ep.getOperations();
+			for (SocktuatorOperation op : ops) {
 				String name = op.getName();
 				Assert.isTrue(!operationsIdx.containsKey(name), "Duplicate operation with name: "+name);
 				operationsIdx.put(name, op);
@@ -113,7 +113,7 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 				try {
 					String operationId = mapper.readValue(input, String.class);
 					log.info("Request received: "+operationId);
-					RscOperation op = operationsIdx.get(operationId);
+					SocktuatorOperation op = operationsIdx.get(operationId);
 					if (op!=null) {
 						OperationParameters params = op.getParameters();
 						HashMap<String,Object> paramValues = new HashMap<>();

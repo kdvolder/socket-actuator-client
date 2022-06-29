@@ -1,6 +1,6 @@
 package socktuator.discovery;
 
-public interface RscOperationParameter {
+public interface SocktuatorOperationParameter {
 
 	String getName();
 	Class<?> getType();

@@ -9,9 +9,14 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
 
-import socktuator.discovery.ExposableRscEndpoint;
+import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointDiscoverer;
 
+/**
+ * A component that dumps out information about SocktuatorEnd
+ * @author kdvolder
+ *
+ */
 @Component
 public class ActuatorEndpointPrinter {
 
@@ -26,8 +31,8 @@ public class ActuatorEndpointPrinter {
 		System.out.println("=======================================");
 		System.out.println(endpointsDiscoverer.getClass().getName());
 		System.out.println("---------------------------------------");
-		Collection<ExposableRscEndpoint> eps = endpointsDiscoverer.getEndpoints();
-		for (ExposableRscEndpoint ep : eps) {
+		Collection<ExposableSocktuatorEndpoint> eps = endpointsDiscoverer.getEndpoints();
+		for (ExposableSocktuatorEndpoint ep : eps) {
 			System.out.println(ep);
 		}
 	}
