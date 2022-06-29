@@ -1,4 +1,4 @@
-package com.example.demo.actuator.rsc;
+package socktuator.client;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +10,8 @@ import java.util.Map;
 import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import socktuator.server.SimpleSocketServer;
 
 public class SimpleSocketClient {
 	
@@ -30,7 +32,7 @@ public class SimpleSocketClient {
 		return call("health.healthForPath", Map.of("path", path));
 	}
 	
-	private Object call(String operationId, Map<String, Object> params) throws IOException {
+	public Object call(String operationId, Map<String, Object> params) throws IOException {
 		try (Socket socket = newSocket()) {
 			OutputStream out = StreamUtils.nonClosing(socket.getOutputStream());
 			InputStream input = StreamUtils.nonClosing(socket.getInputStream());
@@ -39,10 +41,10 @@ public class SimpleSocketClient {
 				mapper.writeValue(out, params);
 			}
 			SimpleSocketServer.Response resp = mapper.readValue(input, SimpleSocketServer.Response.class);
-			if (resp.error!=null) {
-				throw new IOException(resp.error);
+			if (resp.getError()!=null) {
+				throw new IOException(resp.getError());
 			}
-			return resp.result;
+			return resp.getResult();
 		}
 	}
 

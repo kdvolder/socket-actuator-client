@@ -5,10 +5,11 @@ import java.net.InetSocketAddress;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
-import com.example.demo.actuator.rsc.SimpleSocketClient;
-import com.example.demo.actuator.rsc.SocktuatorServerProperties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import socktuator.client.SimpleSocketClient;
+import socktuator.config.SocktuatorServerProperties;
 
 @Component
 public class SelfHealthPinger {

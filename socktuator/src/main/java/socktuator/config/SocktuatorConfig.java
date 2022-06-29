@@ -1,4 +1,4 @@
-package com.example.demo.actuator.rsc;
+package socktuator.config;
 
 import java.util.stream.Collectors;
 
@@ -12,13 +12,18 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import socktuator.discovery.ExposableRscEndpoint;
+import socktuator.discovery.SocktuatorEndpointDiscoverer;
+import socktuator.discovery.RscEndpointsSupplier;
+import socktuator.server.SimpleSocketServer;
+
 @Configuration
 @EnableConfigurationProperties(SocktuatorServerProperties.class)
-public class RscActuatorConfig {
+public class SocktuatorConfig {
 	
 	private ApplicationContext applicationContext;
 
-	public RscActuatorConfig(ApplicationContext applicationContext) {
+	public SocktuatorConfig(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}	
 	
@@ -30,10 +35,10 @@ public class RscActuatorConfig {
 	
 	
 	@Bean
-	public RscEndpointDiscoverer rscAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
+	public SocktuatorEndpointDiscoverer rscAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
 			ObjectProvider<EndpointFilter<ExposableRscEndpoint>> filters) {
-		return new RscEndpointDiscoverer(this.applicationContext, parameterValueMapper,
+		return new SocktuatorEndpointDiscoverer(this.applicationContext, parameterValueMapper,
 				invokerAdvisors.orderedStream().collect(Collectors.toList()),
 				filters.orderedStream().collect(Collectors.toList()));
 	}

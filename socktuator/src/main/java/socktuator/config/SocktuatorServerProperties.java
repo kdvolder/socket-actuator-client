@@ -1,4 +1,4 @@
-package com.example.demo.actuator.rsc;
+package socktuator.config;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

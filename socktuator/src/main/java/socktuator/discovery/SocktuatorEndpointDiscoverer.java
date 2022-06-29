@@ -1,4 +1,4 @@
-package com.example.demo.actuator.rsc;
+package socktuator.discovery;
 
 import java.util.Collection;
 
@@ -19,7 +19,7 @@ import org.springframework.context.ApplicationContext;
  * @author Phillip Webb
  * @author Kris De Volder
  */
-public class RscEndpointDiscoverer extends EndpointDiscoverer<ExposableRscEndpoint, RscOperation>
+public class SocktuatorEndpointDiscoverer extends EndpointDiscoverer<ExposableRscEndpoint, RscOperation>
 		implements RscEndpointsSupplier {
 
 	class DiscoveredRscEndpoint extends AbstractDiscoveredEndpoint<RscOperation> implements ExposableRscEndpoint {
@@ -38,7 +38,7 @@ public class RscEndpointDiscoverer extends EndpointDiscoverer<ExposableRscEndpoi
 	 * @param invokerAdvisors invoker advisors to apply
 	 * @param filters filters to apply
 	 */
-	public RscEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
+	public SocktuatorEndpointDiscoverer(ApplicationContext applicationContext, ParameterValueMapper parameterValueMapper,
 			Collection<OperationInvokerAdvisor> invokerAdvisors,
 			Collection<EndpointFilter<ExposableRscEndpoint>> filters) {
 		super(applicationContext, parameterValueMapper, invokerAdvisors, filters);

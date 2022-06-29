@@ -1,4 +1,4 @@
-package com.example.demo.actuator.rsc;
+package socktuator.discovery;
 
 public interface RscOperationParameter {
 

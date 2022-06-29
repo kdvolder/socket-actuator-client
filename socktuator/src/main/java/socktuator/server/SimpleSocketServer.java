@@ -1,4 +1,4 @@
-package com.example.demo.actuator.rsc;
+package socktuator.server;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,6 +24,11 @@ import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+
+import socktuator.config.SocktuatorServerProperties;
+import socktuator.discovery.ExposableRscEndpoint;
+import socktuator.discovery.RscEndpointsSupplier;
+import socktuator.discovery.RscOperation;
 
 public class SimpleSocketServer implements InitializingBean, DisposableBean {
 
@@ -81,8 +86,8 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 		public void setResult(Object result) {
 			this.result = result;
 		}
-		String error; // an error or null if result is ok
-		Object result; //
+		private String error; // an error for a failed invocation
+		private Object result; // the return value of a successful invocation
 		public Response() {}
 		static Response ok(Object result) { 
 			Response self = new Response();
