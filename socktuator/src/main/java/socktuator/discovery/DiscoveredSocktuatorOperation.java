@@ -15,6 +15,8 @@
  */
 package socktuator.discovery;
 
+import java.lang.reflect.Parameter;
+
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation;
 import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationMethod;
@@ -25,11 +27,19 @@ public class DiscoveredSocktuatorOperation extends AbstractDiscoveredOperation i
 
 	private EndpointId endpointId;
 	private DiscoveredOperationMethod operationMethod;
+	private SocktuatorOperationParameter[] parameters;
 
 	public DiscoveredSocktuatorOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		super(operationMethod, invoker);
 		this.endpointId = endpointId;
 		this.operationMethod = operationMethod;
+		
+		Parameter[] methodParams = operationMethod.getMethod().getParameters();
+		OperationParameters _params = operationMethod.getParameters();
+		parameters = new SocktuatorOperationParameter[_params.getParameterCount()];
+		for (int i = 0; i < parameters.length; i++) {
+			parameters[i] = new DiscoveredSocktuatorOperationParameter(_params.get(i), methodParams[i]);	
+		}
 	}
 
 	@Override
@@ -43,8 +53,13 @@ public class DiscoveredSocktuatorOperation extends AbstractDiscoveredOperation i
 	}
 
 	@Override
-	public OperationParameters getParameters() {
-		return operationMethod.getParameters();
+	public SocktuatorOperationParameter[] getParameters() {
+		return parameters;
+	}
+
+	@Override
+	public EndpointId getEndpoint() {
+		return endpointId;
 	}
 
 }

@@ -3,7 +3,6 @@ package com.example.demo;
 import java.net.InetSocketAddress;
 
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -11,7 +10,7 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import socktuator.client.SimpleSocketClient;
 import socktuator.config.SocktuatorServerProperties;
 
-@Component
+//@Component
 public class SelfHealthPinger {
 
 	SimpleSocketClient client;
@@ -31,6 +30,10 @@ public class SelfHealthPinger {
 
 		Object ph = client.healthForPath("ping");
 		System.out.println("Health.ping = "+mapper.writeValueAsString(ph));
+		
+		Object md = client.getEndpointMetadata();
+		System.out.println("ops = "+mapper.writeValueAsString(md));
+
 	}
 	
 }

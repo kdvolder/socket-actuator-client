@@ -1,12 +1,12 @@
 package socktuator.discovery;
 
+import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.Operation;
-import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 
 public interface SocktuatorOperation extends Operation {
-	String getName();
-	
+	EndpointId getEndpoint();
+	String getName();	
 	Class<?> getOutputType();
-	OperationParameters getParameters();
+	SocktuatorOperationParameter[] getParameters();
 	
 }

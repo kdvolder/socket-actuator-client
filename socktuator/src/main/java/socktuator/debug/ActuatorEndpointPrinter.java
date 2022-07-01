@@ -2,38 +2,55 @@ package socktuator.debug;
 
 import java.util.Collection;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.WebOperation;
+import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpointDiscoverer;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
-import org.springframework.stereotype.Component;
 
 import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointDiscoverer;
 
 /**
- * A component that dumps out information about SocktuatorEnd
- * @author kdvolder
- *
+ * A component that dumps out information about Actuator endpoints.
+ * Mostly for debugging purposes.
  */
-@Component
+//@Component
 public class ActuatorEndpointPrinter {
 
-	private static final Logger log = LoggerFactory.getLogger(ActuatorEndpointPrinter.class);
+	@Autowired
+	SocktuatorEndpointDiscoverer sockDiscoverer;
 	
 	@Autowired
-	SocktuatorEndpointDiscoverer endpointsDiscoverer;
+	WebEndpointDiscoverer webDiscoverer;
 	
 	@EventListener({ApplicationReadyEvent.class})
 	void onReady() {
-		log.info("READY!");
-		System.out.println("=======================================");
-		System.out.println(endpointsDiscoverer.getClass().getName());
-		System.out.println("---------------------------------------");
-		Collection<ExposableSocktuatorEndpoint> eps = endpointsDiscoverer.getEndpoints();
-		for (ExposableSocktuatorEndpoint ep : eps) {
-			System.out.println(ep);
+		{
+			System.out.println("=======================================");
+			System.out.println(sockDiscoverer.getClass().getName());
+			System.out.println("---------------------------------------");
+			Collection<ExposableSocktuatorEndpoint> eps = sockDiscoverer.getEndpoints();
+			for (ExposableSocktuatorEndpoint ep : eps) {
+				System.out.println(ep);
+			}
 		}
+		{
+			System.out.println("=======================================");
+			System.out.println(webDiscoverer.getClass().getName());
+			System.out.println("---------------------------------------");
+			Collection<ExposableWebEndpoint> eps = webDiscoverer.getEndpoints();
+			for (ExposableWebEndpoint ep : eps) {
+				System.out.println("endpoint = "+ep.getEndpointId());
+				for (WebOperation op : ep.getOperations()) {
+					System.out.println(ep.getEndpointId() +"." + op.getId() + " : "+op.getType());
+					op.getRequestPredicate();
+					System.out.println("  ");
+				}
+				System.out.println(ep);
+			}
+		}
+		
 	}
 }

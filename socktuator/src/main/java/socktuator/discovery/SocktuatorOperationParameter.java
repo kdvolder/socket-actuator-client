@@ -1,8 +1,10 @@
 package socktuator.discovery;
 
-public interface SocktuatorOperationParameter {
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
 
-	String getName();
-	Class<?> getType();
+public interface SocktuatorOperationParameter extends OperationParameter {
+
+	public Selector.Match getPathParam();
 	
 }

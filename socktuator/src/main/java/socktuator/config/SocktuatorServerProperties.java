@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class SocktuatorServerProperties {
 
 	private boolean enabled = false;
-	private int timeout = 5000;
+	private int timeout = 10000;
 	private String host = "localhost";
 	private int port = 7007;
 

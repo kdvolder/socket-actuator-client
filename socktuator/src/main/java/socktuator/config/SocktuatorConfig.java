@@ -32,8 +32,7 @@ public class SocktuatorConfig {
 	SimpleSocketServer socketActuatorServer(SocktuatorEndpointsSupplier endpoints, SocktuatorServerProperties props) {
 		return new SimpleSocketServer(endpoints, props);
 	}
-	
-	
+
 	@Bean
 	public SocktuatorEndpointDiscoverer rscAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
