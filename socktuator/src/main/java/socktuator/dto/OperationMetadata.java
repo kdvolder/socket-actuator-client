@@ -36,6 +36,11 @@ public class OperationMetadata {
 		public void setPathParam(Selector.Match pathParam) {
 			this.pathParam = pathParam;
 		}
+		@Override
+		public String toString() {
+			return "Param [name=" + name + ", type=" + type + ", isMandatory=" + isMandatory + ", pathParam="
+					+ pathParam + "]";
+		}
 	}
 	
 	private String endpoint;
