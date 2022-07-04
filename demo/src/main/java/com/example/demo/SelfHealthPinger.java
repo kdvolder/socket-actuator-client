@@ -12,8 +12,9 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import socktuator.client.SimpleSocketClient;
 import socktuator.config.SocktuatorServerProperties;
+import socktuator.dto.OperationMetadata;
 
-//@Component
+@Component
 public class SelfHealthPinger {
 
 	SimpleSocketClient client;
@@ -34,7 +35,7 @@ public class SelfHealthPinger {
 //		Object ph = client.healthForPath("ping");
 //		System.out.println("Health.ping = "+mapper.writeValueAsString(ph));
 //		
-		Object md = client.getEndpointMetadata();
+		OperationMetadata[] md = client.getEndpointMetadata();
 		System.out.println("ops = "+mapper.writeValueAsString(md));
 		
 //		Object metric = client.call("metrics.metric", Map.of(
