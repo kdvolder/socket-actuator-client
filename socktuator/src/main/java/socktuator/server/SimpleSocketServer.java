@@ -36,6 +36,7 @@ import socktuator.discovery.SocktuatorOperationParameter;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.OperationMetadata.Param;
 import socktuator.dto.Response;
+import socktuator.dto.SharedObjectMapper;
 
 public class SimpleSocketServer implements InitializingBean, DisposableBean {
 
@@ -45,7 +46,7 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 	protected static final SocktuatorOperationParameter[] NO_PARAMETERS = {};		
 
 	SocktuatorServerProperties props;
-	private ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper = SharedObjectMapper.get();
 	private ServerSocket serverSocket;
 
 	Map<String, SocktuatorOperation> operationsIdx = new HashMap<>();
@@ -65,6 +66,7 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 				md.setName(op.getName());
 				md.setType(op.getType().toString());
 				md.setOutputType(op.getOutputType().getCanonicalName());
+				md.setProduces(op.getProduces());
 				List<Param> params = new ArrayList<>();
 				for (SocktuatorOperationParameter param : op.getParameters()) {
 					Param param_md = new Param();
@@ -103,6 +105,11 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 		@Override
 		public EndpointId getEndpoint() {
 			return selfId;
+		}
+
+		@Override
+		public List<String> getProduces() {
+			return null;
 		}
 	};
 
@@ -203,7 +210,11 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 	}
 
 	private void send(OutputStream out, Response r) throws StreamWriteException, DatabindException, IOException {
-		mapper.writeValue(out, r);
+		// This 'buffering' here is not efficient but it ensures we write all or nothing.
+		// This avoids sending a 'partial' unparsable json object if the writer might
+		// crash in the middle.
+		byte[] encoded = mapper.writeValueAsBytes(r);
+		out.write(encoded);
 	}
 
 	@Override

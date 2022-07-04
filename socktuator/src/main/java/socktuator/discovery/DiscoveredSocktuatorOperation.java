@@ -16,6 +16,7 @@
 package socktuator.discovery;
 
 import java.lang.reflect.Parameter;
+import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.AbstractDiscoveredOperation;
@@ -50,6 +51,11 @@ public class DiscoveredSocktuatorOperation extends AbstractDiscoveredOperation i
 	@Override
 	public Class<?> getOutputType() {
 		return operationMethod.getMethod().getReturnType();
+	}
+	
+	@Override
+	public List<String> getProduces() {
+		return operationMethod.getProducesMediaTypes();
 	}
 
 	@Override

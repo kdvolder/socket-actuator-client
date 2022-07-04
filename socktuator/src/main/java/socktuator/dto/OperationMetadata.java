@@ -48,6 +48,7 @@ public class OperationMetadata {
 	private List<Param> params;
 	private String type;
 	private String outputType;
+	private List<String> produces;
 	
 	public List<Param> getParams() {
 		return params;
@@ -79,4 +80,16 @@ public class OperationMetadata {
 	public void setOutputType(String outputType) {
 		this.outputType = outputType;
 	}
+	public List<String> getProduces() {
+		return produces;
+	}
+	public void setProduces(List<String> produces) {
+		this.produces = produces;
+	}
+	@Override
+	public String toString() {
+		return "OperationMetadata [endpoint=" + endpoint + ", name=" + name + "]";
+	}
+	
+	
 }

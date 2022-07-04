@@ -7,6 +7,7 @@ import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.util.Map;
 
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
@@ -17,6 +18,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import socktuator.config.TaskSchedConf;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.Response;
+import socktuator.dto.SharedObjectMapper;
 import socktuator.server.SimpleSocketServer.Request;
 
 public class SimpleSocketClient {
@@ -24,7 +26,7 @@ public class SimpleSocketClient {
 	private static final Logger log = LoggerFactory.getLogger(SimpleSocketClient.class);
 	
 	private InetSocketAddress target;
-	private ObjectMapper mapper = new ObjectMapper();
+	private ObjectMapper mapper = SharedObjectMapper.get();
 	private int so_timeout;
 	
 	private ThreadPoolTaskScheduler scheduler = TaskSchedConf.get();
@@ -52,14 +54,20 @@ public class SimpleSocketClient {
 				mapper.writeValue(out, req);
 				log.debug("Client Sent operation {}", mapper.writeValueAsString(req));
 				log.debug("Client awating response...");
-				Response resp = mapper.readValue(input, Response.class);
-				log.debug("Client received response");
-				if (resp.getError()!=null) {
-					log.debug("Client received ERROR response");
-					throw new IOException(resp.getError());
+				String inputBuf = IOUtils.toString(input);
+				try {
+					Response resp = mapper.readValue(inputBuf, Response.class);
+					log.debug("Client received response");
+					if (resp.getError()!=null) {
+						log.debug("Client received ERROR response");
+						throw new IOException(resp.getError());
+					}
+					log.debug("Client received OK response");
+					return resp.getResult();
+				} catch (Exception e) {
+					log.error("Problem processing response", e);
+					throw e;
 				}
-				log.debug("Client received OK response");
-				return resp.getResult();
 			}
 		}).get();
 	}
