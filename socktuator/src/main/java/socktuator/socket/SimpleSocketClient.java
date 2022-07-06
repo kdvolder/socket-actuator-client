@@ -1,4 +1,4 @@
-package socktuator.client;
+package socktuator.socket;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -19,7 +19,7 @@ import socktuator.config.TaskSchedConf;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.Response;
 import socktuator.dto.SharedObjectMapper;
-import socktuator.server.SimpleSocketServer.Request;
+import socktuator.socket.SimpleSocketServer.Request;
 
 public class SimpleSocketClient {
 

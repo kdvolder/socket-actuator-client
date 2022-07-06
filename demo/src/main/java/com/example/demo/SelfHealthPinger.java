@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
-import socktuator.client.SimpleSocketClient;
-import socktuator.config.SocktuatorServerProperties;
+import socktuator.config.SocktuatorSocketServerProperties;
 import socktuator.dto.OperationMetadata;
+import socktuator.socket.SimpleSocketClient;
 
 @Component
 public class SelfHealthPinger {
@@ -20,7 +20,7 @@ public class SelfHealthPinger {
 	SimpleSocketClient client;
 	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 	
-	public SelfHealthPinger(SocktuatorServerProperties props) {
+	public SelfHealthPinger(SocktuatorSocketServerProperties props) {
 		client = new SimpleSocketClient(
 				new InetSocketAddress(props.getHost(), props.getPort()),
 				props.getTimeout()

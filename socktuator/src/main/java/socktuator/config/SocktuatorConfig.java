@@ -16,10 +16,10 @@ import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointDiscoverer;
 import socktuator.discovery.SocktuatorEndpointsSupplier;
 import socktuator.discovery.SocktuatorOperationRegistry;
-import socktuator.server.SimpleSocketServer;
+import socktuator.socket.SimpleSocketServer;
 
 @Configuration
-@EnableConfigurationProperties(SocktuatorServerProperties.class)
+@EnableConfigurationProperties(SocktuatorSocketServerProperties.class)
 public class SocktuatorConfig {
 	
 	private ApplicationContext applicationContext;
@@ -33,9 +33,9 @@ public class SocktuatorConfig {
 		return new SocktuatorOperationRegistry(endpoints);
 	}
 	
-	@ConditionalOnProperty(name = "socktuator.server.enabled")
+	@ConditionalOnProperty(name = "socktuator.socket.server.enabled")
 	@Bean
-	SimpleSocketServer socketActuatorServer(SocktuatorServerProperties props, SocktuatorOperationRegistry endpoints) {
+	SimpleSocketServer socketActuatorServer(SocktuatorSocketServerProperties props, SocktuatorOperationRegistry endpoints) {
 		return new SimpleSocketServer(props, endpoints); 
 	}
 
