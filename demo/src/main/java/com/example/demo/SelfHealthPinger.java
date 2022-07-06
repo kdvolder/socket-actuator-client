@@ -29,20 +29,20 @@ public class SelfHealthPinger {
 	
 	@Scheduled(fixedRate = 5000)
 	void selfHealthCheck() throws Exception {
-//		Object h = client.health();
-//		System.out.println("Health = "+mapper.writeValueAsString(h));
-//
-//		Object ph = client.healthForPath("ping");
-//		System.out.println("Health.ping = "+mapper.writeValueAsString(ph));
-//		
+		Object h = client.health();
+		System.out.println("Health = "+mapper.writeValueAsString(h));
+
+		Object ph = client.healthForPath("ping");
+		System.out.println("Health.ping = "+mapper.writeValueAsString(ph));
+		
 		OperationMetadata[] md = client.getEndpointMetadata();
 		System.out.println("ops = "+mapper.writeValueAsString(md));
 		
-//		Object metric = client.call("metrics.metric", Map.of(
-//				"requiredMetricName", "jvm.memory.used",
-//				"tag", List.of("area:heap")
-//		));
-//		System.out.println("metric = "+mapper.writeValueAsString(metric));
+		Object metric = client.call("metrics.metric", Map.of(
+				"requiredMetricName", "jvm.memory.used",
+				"tag", List.of("area:heap")
+		));
+		System.out.println("metric = "+mapper.writeValueAsString(metric));
 
 	}
 	

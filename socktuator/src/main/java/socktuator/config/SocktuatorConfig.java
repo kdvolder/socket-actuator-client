@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Configuration;
 import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointDiscoverer;
 import socktuator.discovery.SocktuatorEndpointsSupplier;
+import socktuator.discovery.SocktuatorOperationRegistry;
 import socktuator.server.SimpleSocketServer;
 
 @Configuration
@@ -27,14 +28,19 @@ public class SocktuatorConfig {
 		this.applicationContext = applicationContext;
 	}	
 	
+	@Bean
+	SocktuatorOperationRegistry socktuatorOperations(SocktuatorEndpointsSupplier endpoints) {
+		return new SocktuatorOperationRegistry(endpoints);
+	}
+	
 	@ConditionalOnProperty(name = "socktuator.server.enabled")
 	@Bean
-	SimpleSocketServer socketActuatorServer(SocktuatorEndpointsSupplier endpoints, SocktuatorServerProperties props) {
-		return new SimpleSocketServer(endpoints, props);
+	SimpleSocketServer socketActuatorServer(SocktuatorServerProperties props, SocktuatorOperationRegistry endpoints) {
+		return new SimpleSocketServer(props, endpoints); 
 	}
 
 	@Bean
-	public SocktuatorEndpointDiscoverer rscAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
+	public SocktuatorEndpointDiscoverer socktuatorAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
 			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
 			ObjectProvider<EndpointFilter<ExposableSocktuatorEndpoint>> filters) {
 		return new SocktuatorEndpointDiscoverer(this.applicationContext, parameterValueMapper,

@@ -33,6 +33,7 @@ import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointsSupplier;
 import socktuator.discovery.SocktuatorOperation;
 import socktuator.discovery.SocktuatorOperationParameter;
+import socktuator.discovery.SocktuatorOperationRegistry;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.OperationMetadata.Param;
 import socktuator.dto.Response;
@@ -41,94 +42,19 @@ import socktuator.dto.SharedObjectMapper;
 public class SimpleSocketServer implements InitializingBean, DisposableBean {
 
 	private static final Logger log = LoggerFactory.getLogger(SimpleSocketServer.class);
-	private ThreadPoolTaskScheduler scheduler = TaskSchedConf.get();
+	private final ThreadPoolTaskScheduler scheduler = TaskSchedConf.get();
 
-	protected static final SocktuatorOperationParameter[] NO_PARAMETERS = {};		
-
-	SocktuatorServerProperties props;
-	private ObjectMapper mapper = SharedObjectMapper.get();
+	private final SocktuatorServerProperties props;
+	private final ObjectMapper mapper = SharedObjectMapper.get();
 	private ServerSocket serverSocket;
-
-	Map<String, SocktuatorOperation> operationsIdx = new HashMap<>();
-
-	private SocktuatorOperation getOperationsMetadataOperation = new SocktuatorOperation() {
-		
-		private EndpointId selfId = EndpointId.of("actuator");
-
-		@Override
-		public OperationMetadata[] invoke(InvocationContext context) {
-			Collection<SocktuatorOperation> operations = operationsIdx.values();
-			OperationMetadata[] datas = new OperationMetadata[operations.size()];
-			int i = 0;
-			for (SocktuatorOperation op : operations) {
-				OperationMetadata md = new OperationMetadata();
-				md.setEndpoint(op.getEndpoint().toString());
-				md.setName(op.getName());
-				md.setType(op.getType().toString());
-				md.setOutputType(op.getOutputType().getCanonicalName());
-				md.setProduces(op.getProduces());
-				List<Param> params = new ArrayList<>();
-				for (SocktuatorOperationParameter param : op.getParameters()) {
-					Param param_md = new Param();
-					param_md.setMandatory(param.isMandatory());
-					param_md.setName(param.getName());
-					param_md.setType(param.getType().getCanonicalName());
-					param_md.setPathParam(param.getPathParam());
-					params.add(param_md);
-				}
-				md.setParams(params);
-				datas[i++] = md;
-			}
-			return datas;
-		}
-		
-		@Override
-		public OperationType getType() {
-			return OperationType.READ;
-		}
-		
-		@Override
-		public SocktuatorOperationParameter[] getParameters() {
-			return NO_PARAMETERS;
-		}
-		
-		@Override
-		public Class<?> getOutputType() {
-			return OperationMetadata[].class;
-		}
-	
-		@Override
-		public String getName() {
-			return getEndpoint()+"."+getEndpoint();
-		}
-
-		@Override
-		public EndpointId getEndpoint() {
-			return selfId;
-		}
-
-		@Override
-		public List<String> getProduces() {
-			return null;
-		}
-	};
+	private final SocktuatorOperationRegistry operationsIdx;
 
 	public SimpleSocketServer(
-			SocktuatorEndpointsSupplier endpointSupplier,
-			SocktuatorServerProperties props
+			SocktuatorServerProperties props,
+			SocktuatorOperationRegistry operationsIdx
 	) {
 		this.props = props;
-		Collection<ExposableSocktuatorEndpoint> endpoints = endpointSupplier.getEndpoints();
-		for (ExposableSocktuatorEndpoint ep : endpoints) {
-			Collection<SocktuatorOperation> ops = ep.getOperations();
-			for (SocktuatorOperation op : ops) {
-				String name = op.getName();
-				Assert.isTrue(!operationsIdx.containsKey(name), "Duplicate operation with name: "+name);
-				operationsIdx.put(name, op);
-				log.info("actuator socket operation registered: {}", name);
-			}
-		}
-		operationsIdx.put(getOperationsMetadataOperation.getName(), getOperationsMetadataOperation);
+		this.operationsIdx = operationsIdx;
 	}
 
 	@Override
