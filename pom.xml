@@ -9,6 +9,7 @@
  
   <modules>
     <module>socktuator</module>
+    <module>demo-rsocket</module>
     <module>demo</module>
   </modules>
 </project>
