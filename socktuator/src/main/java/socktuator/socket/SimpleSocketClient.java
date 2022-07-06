@@ -17,9 +17,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import socktuator.config.TaskSchedConf;
 import socktuator.dto.OperationMetadata;
+import socktuator.dto.Request;
 import socktuator.dto.Response;
 import socktuator.dto.SharedObjectMapper;
-import socktuator.socket.SimpleSocketServer.Request;
 
 public class SimpleSocketClient {
 
