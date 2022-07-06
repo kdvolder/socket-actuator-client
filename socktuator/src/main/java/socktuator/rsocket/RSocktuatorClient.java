@@ -11,7 +11,9 @@ import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import socktuator.config.RSocktuatorServerProps;
+import socktuator.dto.OperationMetadata;
 import socktuator.dto.Request;
+import socktuator.dto.SharedObjectMapper;
 
 public class RSocktuatorClient {
 	
@@ -48,4 +50,8 @@ public class RSocktuatorClient {
 			.retrieveMono(Object.class);
 	}
 
+	public Mono<OperationMetadata[]> getEndpointMetadata() throws Exception {
+		return call("actuator.actuator", Map.of())
+		.map(untyped_resp -> SharedObjectMapper.get().convertValue(untyped_resp, OperationMetadata[].class));
+	}
 }

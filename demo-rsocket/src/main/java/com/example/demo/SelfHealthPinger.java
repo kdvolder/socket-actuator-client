@@ -1,6 +1,7 @@
 package com.example.demo;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -29,18 +30,19 @@ public class SelfHealthPinger {
 	
 	@EventListener(ApplicationReadyEvent.class)
 	void selfHealthCheck() throws Exception {
+		
+		
+		
 //		Object h = client.health();
 //		System.out.println("Health = "+mapper.writeValueAsString(h));
 
-		client.healthForPath("ping").flatMap(ph -> Mono.fromCallable(() -> {
-			System.out.println("Health.ping = "+mapper.writeValueAsString(ph));
-			return Mono.empty();
-		}))
+		client.healthForPath("ping").flatMap(printAsJson("health.ping"))
+		.then(client.getEndpointMetadata().flatMap(printAsJson("ops")))
 		.then(Mono.delay(Duration.ofSeconds(5)))
 		.repeat()
 		.subscribe();
 		
-//		OperationMetadata[] md = client.getEndpointMetadata();
+		;
 //		System.out.println("ops = "+mapper.writeValueAsString(md));
 //		
 //		Object metric = client.call("metrics.metric", Map.of(
@@ -49,6 +51,14 @@ public class SelfHealthPinger {
 //		));
 //		System.out.println("metric = "+mapper.writeValueAsString(metric));
 
+	}
+
+	private Function<Object, Mono<Void>> printAsJson(String prefix) {
+		return data -> Mono.fromCallable(() -> {
+			System.out.println(prefix+" = "+mapper.writeValueAsString(data));
+			return "ok";
+		})
+		.then();
 	}
 	
 }
