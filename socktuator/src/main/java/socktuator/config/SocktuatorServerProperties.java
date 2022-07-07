@@ -3,7 +3,7 @@ package socktuator.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("socktuator.socket.server")
-public class SocktuatorSocketServerProperties {
+public class SocktuatorServerProperties {
 
 	private boolean enabled = false;
 	private int timeout = 10000;

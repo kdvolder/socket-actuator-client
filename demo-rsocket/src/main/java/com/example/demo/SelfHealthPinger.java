@@ -11,7 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import reactor.core.publisher.Mono;
-import socktuator.config.RSocktuatorServerProps;
+import socktuator.config.RSocktuatorServerProperties;
 import socktuator.rsocket.RSocktuatorClient;
 
 @Component
@@ -20,7 +20,7 @@ public class SelfHealthPinger {
 	RSocktuatorClient client;
 	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 	
-	public SelfHealthPinger(RSocktuatorServerProps props) {
+	public SelfHealthPinger(RSocktuatorServerProperties props) {
 //		client = new SimpleSocketClient(
 //				new InetSocketAddress(props.getHost(), props.getPort()),
 //				props.getTimeout()

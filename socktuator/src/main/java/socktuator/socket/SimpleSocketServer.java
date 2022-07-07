@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.exc.StreamWriteException;
 import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import socktuator.config.SocktuatorSocketServerProperties;
+import socktuator.config.SocktuatorServerProperties;
 import socktuator.config.TaskSchedConf;
 import socktuator.discovery.SocktuatorOperation;
 import socktuator.discovery.SocktuatorOperationParameter;
@@ -35,13 +35,13 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 	private static final Logger log = LoggerFactory.getLogger(SimpleSocketServer.class);
 	private final ThreadPoolTaskScheduler scheduler = TaskSchedConf.get();
 
-	private final SocktuatorSocketServerProperties props;
+	private final SocktuatorServerProperties props;
 	private final ObjectMapper mapper = SharedObjectMapper.get();
 	private ServerSocket serverSocket;
 	private final SocktuatorOperationRegistry operationsIdx;
 
 	public SimpleSocketServer(
-			SocktuatorSocketServerProperties props,
+			SocktuatorServerProperties props,
 			SocktuatorOperationRegistry operationsIdx
 	) {
 		this.props = props;

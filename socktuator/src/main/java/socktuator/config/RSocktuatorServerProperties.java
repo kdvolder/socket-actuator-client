@@ -3,7 +3,7 @@ package socktuator.config;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("socktuator.rsocket.server")
-public class RSocktuatorServerProps {
+public class RSocktuatorServerProperties {
 	
 	private int port = 7000;
 	private String host = "localhost";

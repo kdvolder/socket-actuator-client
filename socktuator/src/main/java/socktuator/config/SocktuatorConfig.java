@@ -21,8 +21,8 @@ import socktuator.socket.SimpleSocketServer;
 
 @Configuration
 @EnableConfigurationProperties({
-	SocktuatorSocketServerProperties.class,
-	RSocktuatorServerProps.class
+	SocktuatorServerProperties.class,
+	RSocktuatorServerProperties.class
 })
 public class SocktuatorConfig {
 	
@@ -39,7 +39,7 @@ public class SocktuatorConfig {
 	
 	@ConditionalOnProperty(name = "socktuator.socket.server.enabled")
 	@Bean
-	SimpleSocketServer socketActuatorServer(SocktuatorSocketServerProperties props, SocktuatorOperationRegistry endpoints) {
+	SimpleSocketServer socketActuatorServer(SocktuatorServerProperties props, SocktuatorOperationRegistry endpoints) {
 		return new SimpleSocketServer(props, endpoints); 
 	}
 	
@@ -48,6 +48,12 @@ public class SocktuatorConfig {
 	RSocktuatorController rsocketController(SocktuatorOperationRegistry ops) {
 		return new RSocktuatorController(ops);
 	}
+	
+	//TODO: consume the config props from RSoctuatorServerProps to create
+	// an RSocket server by ourself (i.e. not using Spring Boot autoconfig) and
+	// then define it precisely how we want.
+	//I am not yet sure this is possible but a good place to start exploring is this
+	// method: org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler.responder(RSocketStrategies, Object...)
 
 	@Bean
 	public SocktuatorEndpointDiscoverer socktuatorAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,

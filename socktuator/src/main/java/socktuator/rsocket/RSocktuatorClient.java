@@ -10,7 +10,7 @@ import org.springframework.util.MimeTypeUtils;
 
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
-import socktuator.config.RSocktuatorServerProps;
+import socktuator.config.RSocktuatorServerProperties;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.Request;
 import socktuator.dto.SharedObjectMapper;
@@ -19,7 +19,7 @@ public class RSocktuatorClient {
 	
 	private RSocketRequester requestor;
 	
-	public RSocktuatorClient(RSocktuatorServerProps serverProps) {
+	public RSocktuatorClient(RSocktuatorServerProperties serverProps) {
 		RSocketRequester.Builder builder = RSocketRequester.builder();
         requestor = builder
           .rsocketConnector(
