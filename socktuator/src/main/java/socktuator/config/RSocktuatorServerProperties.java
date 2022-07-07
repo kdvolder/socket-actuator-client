@@ -5,7 +5,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("socktuator.rsocket.server")
 public class RSocktuatorServerProperties {
 	
-	private int port = 7000;
+	//TODO: probably make this a subclass of org.springframework.boot.autoconfigure.rsocket.RSocketProperties.Server
+	//  Alternatively maybe we simply follow the same structure.
+	// Note: this will require also client creation to provide similar / matching options.
+	
+	private int port = 7123;
 	private String host = "localhost";
 	private boolean enabled;
 

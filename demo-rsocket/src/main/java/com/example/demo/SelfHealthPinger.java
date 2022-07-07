@@ -20,12 +20,12 @@ public class SelfHealthPinger {
 	RSocktuatorClient client;
 	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 	
-	public SelfHealthPinger(RSocktuatorServerProperties props) {
+	public SelfHealthPinger(RSocktuatorServerProperties serverProps) {
 //		client = new SimpleSocketClient(
 //				new InetSocketAddress(props.getHost(), props.getPort()),
 //				props.getTimeout()
 //		);
-		client = new RSocktuatorClient(props);
+		client = new RSocktuatorClient(serverProps.getHost(), serverProps.getPort());
 	}
 	
 	@EventListener(ApplicationReadyEvent.class)

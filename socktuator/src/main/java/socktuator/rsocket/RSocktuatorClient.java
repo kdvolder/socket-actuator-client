@@ -10,7 +10,6 @@ import org.springframework.util.MimeTypeUtils;
 
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
-import socktuator.config.RSocktuatorServerProperties;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.Request;
 import socktuator.dto.SharedObjectMapper;
@@ -19,7 +18,7 @@ public class RSocktuatorClient {
 	
 	private RSocketRequester requestor;
 	
-	public RSocktuatorClient(RSocktuatorServerProperties serverProps) {
+	public RSocktuatorClient(String host, int port) {
 		RSocketRequester.Builder builder = RSocketRequester.builder();
         requestor = builder
           .rsocketConnector(
@@ -31,7 +30,7 @@ public class RSocktuatorClient {
         	  sb.encoder(new Jackson2JsonEncoder());
           })
           .dataMimeType(MimeTypeUtils.APPLICATION_JSON)
-          .tcp(serverProps.getHost(), serverProps.getPort());
+          .tcp(host,port);
 	}
 
 	

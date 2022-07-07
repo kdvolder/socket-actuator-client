@@ -1,24 +1,24 @@
+#spring:
+#  rsocket:
+#    server:
+#      port: 7000
 socktuator:
   rsocket:
     server:
-      port: 7000
+      port: 7123
       enabled: true
-spring:
-  rsocket:
-    server:
-      port: 7000
 #########################################
 # The below is not needed for socktuator
 # But it is convenient to compare socktuator
 # against the actuator web endpoints
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"  
-  endpoint:
-    env:
-      post:
-        enabled: true
-    health:
-      show-details: always
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"  
+#  endpoint:
+#    env:
+#      post:
+#        enabled: true
+#    health:
+#      show-details: always

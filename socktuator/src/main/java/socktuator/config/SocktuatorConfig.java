@@ -1,5 +1,7 @@
 package socktuator.config;
 
+import java.net.UnknownHostException;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -11,12 +13,13 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.client.reactive.ReactorResourceFactory;
 
 import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointDiscoverer;
 import socktuator.discovery.SocktuatorEndpointsSupplier;
 import socktuator.discovery.SocktuatorOperationRegistry;
-import socktuator.rsocket.RSocktuatorController;
+import socktuator.rsocket.RSocktuatorServerBootstrap;
 import socktuator.socket.SimpleSocketServer;
 
 @Configuration
@@ -45,15 +48,13 @@ public class SocktuatorConfig {
 	
 	@ConditionalOnProperty(name = "socktuator.rsocket.server.enabled")
 	@Bean
-	RSocktuatorController rsocketController(SocktuatorOperationRegistry ops) {
-		return new RSocktuatorController(ops);
+	RSocktuatorServerBootstrap rsocktuatorServer(
+			RSocktuatorServerProperties props, 
+			Optional<ReactorResourceFactory> resourceFactory, 
+			SocktuatorOperationRegistry operations
+	) throws UnknownHostException {
+		return new RSocktuatorServerBootstrap(props, operations, resourceFactory);
 	}
-	
-	//TODO: consume the config props from RSoctuatorServerProps to create
-	// an RSocket server by ourself (i.e. not using Spring Boot autoconfig) and
-	// then define it precisely how we want.
-	//I am not yet sure this is possible but a good place to start exploring is this
-	// method: org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler.responder(RSocketStrategies, Object...)
 
 	@Bean
 	public SocktuatorEndpointDiscoverer socktuatorAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
