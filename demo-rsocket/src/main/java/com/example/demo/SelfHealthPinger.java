@@ -1,6 +1,9 @@
 package com.example.demo;
 
+import java.net.InetSocketAddress;
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -11,13 +14,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 
 import reactor.core.publisher.Mono;
+import socktuator.api.SocktuatorClient;
 import socktuator.config.RSocktuatorServerProperties;
 import socktuator.rsocket.RSocktuatorClient;
 
 @Component
 public class SelfHealthPinger {
 
-	RSocktuatorClient client;
+	SocktuatorClient client;
 	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 	
 	public SelfHealthPinger(RSocktuatorServerProperties serverProps) {
@@ -25,32 +29,36 @@ public class SelfHealthPinger {
 //				new InetSocketAddress(props.getHost(), props.getPort()),
 //				props.getTimeout()
 //		);
-		client = new RSocktuatorClient(serverProps.getHost(), serverProps.getPort());
+		client = new RSocktuatorClient(
+				new InetSocketAddress(serverProps.getHost(), serverProps.getPort()),
+				serverProps.getTimeout()
+		);
 	}
 	
 	@EventListener(ApplicationReadyEvent.class)
 	void selfHealthCheck() throws Exception {
 		
-		
-		
-//		Object h = client.health();
-//		System.out.println("Health = "+mapper.writeValueAsString(h));
-
-		client.healthForPath("ping").flatMap(printAsJson("health.ping"))
-		.then(client.getEndpointMetadata().flatMap(printAsJson("ops")))
-		.then(Mono.delay(Duration.ofSeconds(5)))
+		Mono.empty()
+		.then(
+				client.healthForPath_mono("ping")
+				.flatMap(printAsJson("health.ping"))
+		).then(
+				client.getEndpointMetadata()
+				.flatMap(printAsJson("ops"))
+		).then(
+				client.health_mono()
+				.flatMap(printAsJson("health"))
+		).then(
+				client.call_mono("metrics.metric", Map.of(
+						"requiredMetricName", "jvm.memory.used",
+						"tag", List.of("area:heap")
+				))
+				.flatMap(printAsJson("metric"))
+		).then(
+				Mono.delay(Duration.ofSeconds(5))
+		)
 		.repeat()
 		.subscribe();
-		
-		;
-//		System.out.println("ops = "+mapper.writeValueAsString(md));
-//		
-//		Object metric = client.call("metrics.metric", Map.of(
-//				"requiredMetricName", "jvm.memory.used",
-//				"tag", List.of("area:heap")
-//		));
-//		System.out.println("metric = "+mapper.writeValueAsString(metric));
-
 	}
 
 	private Function<Object, Mono<Void>> printAsJson(String prefix) {

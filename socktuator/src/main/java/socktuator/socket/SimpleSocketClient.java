@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
@@ -18,32 +19,25 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
+import socktuator.api.SocktuatorClient;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.Request;
 import socktuator.dto.Response;
 import socktuator.dto.SharedObjectMapper;
 
-public class SimpleSocketClient {
+public class SimpleSocketClient implements SocktuatorClient {
 
 	private static final Logger log = LoggerFactory.getLogger(SimpleSocketClient.class);
 	
 	private InetSocketAddress target;
 	private ObjectMapper mapper = SharedObjectMapper.get();
-	private int so_timeout;
+	private Duration so_timeout;
 	
 	private Scheduler scheduler = Schedulers.boundedElastic();
 
-	public SimpleSocketClient(InetSocketAddress target, int so_timeout) {
+	public SimpleSocketClient(InetSocketAddress target, Duration so_timeout) {
 		this.target = target;
 		this.so_timeout = so_timeout;
-	}
-	
-	public Mono<Object> health_mono() {
-		return call_mono("health.health", Map.of());
-	}
-	
-	public Mono<Object> healthForPath_mono(String... path) {
-		return call_mono("health.healthForPath", Map.of("path", path));
 	}
 	
 	public Mono<Object> call_mono(String operationId, Map<String, Object> params) {
@@ -76,7 +70,7 @@ public class SimpleSocketClient {
 
 	protected Socket newSocket() throws IOException {
 		Socket so = new Socket(target.getAddress(), target.getPort());
-		so.setSoTimeout(so_timeout);
+		so.setSoTimeout((int)so_timeout.toMillis());
 		return so;
 	}
 

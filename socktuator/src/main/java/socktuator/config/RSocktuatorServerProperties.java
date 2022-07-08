@@ -1,5 +1,7 @@
 package socktuator.config;
 
+import java.time.Duration;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("socktuator.rsocket.server")
@@ -12,6 +14,7 @@ public class RSocktuatorServerProperties {
 	private int port = 7123;
 	private String host = "localhost";
 	private boolean enabled;
+	private Duration timeout = Duration.ofSeconds(5);
 
 	public int getPort() {
 		return port;
@@ -35,6 +38,14 @@ public class RSocktuatorServerProperties {
 
 	public void setEnabled(boolean enabled) {
 		this.enabled = enabled;
+	}
+
+	public Duration getTimeout() {
+		return timeout;
+	}
+
+	public void setTimeout(Duration timeout) {
+		this.timeout = timeout;
 	}
 
 }
