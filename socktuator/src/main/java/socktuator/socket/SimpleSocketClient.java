@@ -5,17 +5,19 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import socktuator.config.TaskSchedConf;
+import reactor.core.publisher.Mono;
+import reactor.core.scheduler.Scheduler;
+import reactor.core.scheduler.Schedulers;
 import socktuator.dto.OperationMetadata;
 import socktuator.dto.Request;
 import socktuator.dto.Response;
@@ -29,23 +31,23 @@ public class SimpleSocketClient {
 	private ObjectMapper mapper = SharedObjectMapper.get();
 	private int so_timeout;
 	
-	private ThreadPoolTaskScheduler scheduler = TaskSchedConf.get();
+	private Scheduler scheduler = Schedulers.boundedElastic();
 
 	public SimpleSocketClient(InetSocketAddress target, int so_timeout) {
 		this.target = target;
 		this.so_timeout = so_timeout;
 	}
 	
-	public Object health() throws Exception {
-		return call("health.health", Map.of());
+	public Mono<Object> health_mono() {
+		return call_mono("health.health", Map.of());
 	}
 	
-	public Object healthForPath(String... path) throws Exception {
-		return call("health.healthForPath", Map.of("path", path));
+	public Mono<Object> healthForPath_mono(String... path) {
+		return call_mono("health.healthForPath", Map.of("path", path));
 	}
 	
-	public Object call(String operationId, Map<String, Object> params) throws Exception {
-		return scheduler.submit(() -> {
+	public Mono<Object> call_mono(String operationId, Map<String, Object> params) {
+		return Mono.fromCallable(() -> {
 			try (Socket socket = newSocket()) {
 				OutputStream out = StreamUtils.nonClosing(socket.getOutputStream());
 				InputStream input = StreamUtils.nonClosing(socket.getInputStream());
@@ -54,7 +56,7 @@ public class SimpleSocketClient {
 				mapper.writeValue(out, req);
 				log.debug("Client Sent operation {}", mapper.writeValueAsString(req));
 				log.debug("Client awating response...");
-				String inputBuf = IOUtils.toString(input);
+				String inputBuf = IOUtils.toString(input, StandardCharsets.UTF_8);
 				try {
 					Response resp = mapper.readValue(inputBuf, Response.class);
 					log.debug("Client received response");
@@ -69,7 +71,7 @@ public class SimpleSocketClient {
 					throw e;
 				}
 			}
-		}).get();
+		}).subscribeOn(scheduler);
 	}
 
 	protected Socket newSocket() throws IOException {
@@ -78,8 +80,8 @@ public class SimpleSocketClient {
 		return so;
 	}
 
-	public OperationMetadata[] getEndpointMetadata() throws Exception {
-		Object untyped_resp = call("actuator.actuator", Map.of());
-		return mapper.convertValue(untyped_resp, OperationMetadata[].class);
+	public Mono<OperationMetadata[]> getEndpointMetadata() {
+		return call_mono("actuator.actuator", Map.of())
+		.map(untyped_resp -> mapper.convertValue(untyped_resp, OperationMetadata[].class));
 	}
 }

@@ -5,8 +5,11 @@
 socktuator:
   rsocket:
     server:
-      port: 7123
       enabled: true
+  socket:
+    server:
+      enabled: true
+      
 #########################################
 # The below is not needed for socktuator
 # But it is convenient to compare socktuator
