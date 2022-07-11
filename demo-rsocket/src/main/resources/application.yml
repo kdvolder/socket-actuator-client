@@ -1,11 +1,9 @@
-#spring:
-#  rsocket:
-#    server:
-#      port: 7000
 socktuator:
   rsocket:
     server:
-      enabled: true
+      tanzu:
+        enabled: true
+        #port: 7001
   socket:
     server:
       enabled: true

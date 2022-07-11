@@ -14,7 +14,6 @@ import org.springframework.util.MimeTypeUtils;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import socktuator.api.SocktuatorClient;
-import socktuator.config.RSocktuatorServerProperties;
 import socktuator.dto.Request;
 
 public class RSocktuatorClient implements SocktuatorClient {

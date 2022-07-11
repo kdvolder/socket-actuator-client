@@ -25,7 +25,7 @@ import socktuator.socket.SimpleSocketServer;
 @Configuration
 @EnableConfigurationProperties({
 	SocktuatorServerProperties.class,
-	RSocktuatorServerProperties.class
+	RSocktuatorProperties.class
 })
 public class SocktuatorConfig {
 	
@@ -46,10 +46,9 @@ public class SocktuatorConfig {
 		return new SimpleSocketServer(props, endpoints); 
 	}
 	
-	@ConditionalOnProperty(name = "socktuator.rsocket.server.enabled")
 	@Bean
 	RSocktuatorServerBootstrap rsocktuatorServer(
-			RSocktuatorServerProperties props, 
+			RSocktuatorProperties props, 
 			Optional<ReactorResourceFactory> resourceFactory, 
 			SocktuatorOperationRegistry operations
 	) throws UnknownHostException {
