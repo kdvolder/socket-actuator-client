@@ -40,7 +40,7 @@ public class SimpleSocketClient implements SocktuatorClient {
 		this.so_timeout = so_timeout;
 	}
 	
-	public Mono<Object> call_mono(String operationId, Map<String, Object> params) {
+	public Mono<Object> call(String operationId, Map<String, Object> params) {
 		return Mono.fromCallable(() -> {
 			try (Socket socket = newSocket()) {
 				OutputStream out = StreamUtils.nonClosing(socket.getOutputStream());
@@ -75,7 +75,7 @@ public class SimpleSocketClient implements SocktuatorClient {
 	}
 
 	public Mono<OperationMetadata[]> getEndpointMetadata() {
-		return call_mono("actuator.actuator", Map.of())
+		return call("actuator.actuator", Map.of())
 		.map(untyped_resp -> mapper.convertValue(untyped_resp, OperationMetadata[].class));
 	}
 }

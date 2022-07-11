@@ -43,7 +43,7 @@ public class RSocktuatorClient implements SocktuatorClient {
 
 	
 	@Override
-	public Mono<Object> call_mono(String operationId, Map<String, Object> params) {
+	public Mono<Object> call(String operationId, Map<String, Object> params) {
 		return requestor
 			.route(RSocktuatorRoutes.ACTUATOR)
 			.data(new Request(operationId, params))

@@ -40,16 +40,16 @@ public class SelfHealthPinger {
 		
 		Mono.empty()
 		.then(
-				client.healthForPath_mono("ping")
+				client.healthForPath("ping")
 				.flatMap(printAsJson("health.ping"))
 		).then(
 				client.getEndpointMetadata()
 				.flatMap(printAsJson("ops"))
 		).then(
-				client.health_mono()
+				client.health()
 				.flatMap(printAsJson("health"))
 		).then(
-				client.call_mono("metrics.metric", Map.of(
+				client.call("metrics.metric", Map.of(
 						"requiredMetricName", "jvm.memory.used",
 						"tag", List.of("area:heap")
 				))
