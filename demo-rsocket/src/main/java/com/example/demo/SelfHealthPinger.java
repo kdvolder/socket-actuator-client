@@ -8,6 +8,7 @@ import java.util.function.Function;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
@@ -19,7 +20,7 @@ import socktuator.config.RSocktuatorProperties.Server;
 import socktuator.config.SocktuatorServerProperties;
 import socktuator.rsocket.RSocktuatorClient;
 
-//@Component
+@Component
 public class SelfHealthPinger {
 
 	SocktuatorClient client;

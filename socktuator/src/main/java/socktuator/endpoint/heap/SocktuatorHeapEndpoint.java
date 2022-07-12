@@ -1,14 +1,21 @@
 package socktuator.endpoint.heap;
 
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
+import org.springframework.boot.actuate.management.HeapDumpWebEndpoint;
+import org.springframework.core.io.Resource;
 
-@WebEndpoint(id="heap")
+import socktuator.endpoint.annot.SocktuatorEndpoint;
+
+
+@SocktuatorEndpoint(id="heap")
 public class SocktuatorHeapEndpoint {
+
+	HeapDumpWebEndpoint heapDumper = new HeapDumpWebEndpoint();
 	
 	@ReadOperation
-	String dump() {
-		return "This is a placeholder. We shall implement this later";
+	public WebEndpointResponse<Resource> dump(Boolean live) {
+		return heapDumper.heapDump(live);
 	}
 
 }
