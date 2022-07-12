@@ -26,10 +26,6 @@ public class SelfHealthPinger {
 	SocktuatorClient client;
 	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 	
-	/**
-	 * @param rsocketProps
-	 * @param plainSocket
-	 */
 	public SelfHealthPinger(RSocktuatorProperties rsocketProps, SocktuatorServerProperties plainSocket) {
 		// client = new SimpleSocketClient(
 		// 		new InetSocketAddress(plainSocket.getHost(), plainSocket.getPort()),
