@@ -16,9 +16,8 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import reactor.core.publisher.Mono;
 import socktuator.api.SocktuatorClient;
 import socktuator.config.RSocktuatorProperties;
-import socktuator.config.RSocktuatorProperties.Server;
 import socktuator.config.SocktuatorServerProperties;
-import socktuator.rsocket.RSocktuatorClient;
+import socktuator.socket.SimpleSocketClient;
 
 @Component
 public class SelfHealthPinger {
@@ -27,15 +26,17 @@ public class SelfHealthPinger {
 	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 	
 	public SelfHealthPinger(RSocktuatorProperties rsocketProps, SocktuatorServerProperties plainSocket) {
-		// client = new SimpleSocketClient(
-		// 		new InetSocketAddress(plainSocket.getHost(), plainSocket.getPort()),
-		// 		Duration.ofMillis(plainSocket.getTimeout())
-		// );
-		Server someServer = rsocketProps.getServer().values().iterator().next();
-		client = new RSocktuatorClient(
-				new InetSocketAddress(someServer.getHost(), someServer.getPort()),
-				someServer.getTimeout()
+		SocktuatorServerProperties.Server someServer = plainSocket.getServers().values().iterator().next();
+		client = new SimpleSocketClient(
+		 		new InetSocketAddress(someServer.getHost(), someServer.getPort()),
+		 		Duration.ofMillis(someServer.getTimeout())
 		);
+		 
+//		Server someServer = rsocketProps.getServer().values().iterator().next();
+//		client = new RSocktuatorClient(
+//				new InetSocketAddress(someServer.getHost(), someServer.getPort()),
+//				someServer.getTimeout()
+//		);
 	}
 	
 	@EventListener(ApplicationReadyEvent.class)

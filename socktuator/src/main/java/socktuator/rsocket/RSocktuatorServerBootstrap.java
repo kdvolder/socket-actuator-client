@@ -57,7 +57,7 @@ public class RSocktuatorServerBootstrap implements SmartLifecycle, DisposableBea
 			                                        // resources (i.e. borrowing thread and connection pools and the like from
 													// the hosting application. I am hoping this won't cause any issues.
 	) throws UnknownHostException {
-		Map<String, Server> serversProps = rsocktuatorProps.getServer();
+		Map<String, Server> serversProps = rsocktuatorProps.getServers();
 		for (Server serverProps : serversProps.values()) {
 			// Perform a 'self contained' initialization op the server instance using only information from RSocktuatorXXX beans
 			// This 'self-containedness' is meant to keep it so that RSocktuator config remains independent of host application's own
@@ -117,8 +117,12 @@ public class RSocktuatorServerBootstrap implements SmartLifecycle, DisposableBea
 
 	@Override
 	public void stop() {
-		for (RSocketServer server : servers) {
-			server.stop();
+		try {
+			for (RSocketServer server : servers) {
+				server.stop();
+			}
+		} finally {
+			servers.clear();
 		}
 	}
 

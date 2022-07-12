@@ -20,7 +20,7 @@ import socktuator.discovery.SocktuatorEndpointDiscoverer;
 import socktuator.discovery.SocktuatorEndpointsSupplier;
 import socktuator.discovery.SocktuatorOperationRegistry;
 import socktuator.rsocket.RSocktuatorServerBootstrap;
-import socktuator.socket.SimpleSocketServer;
+import socktuator.socket.SimpleSocketServerBootstrap;
 
 @Configuration
 @EnableConfigurationProperties({
@@ -39,11 +39,11 @@ public class SocktuatorConfig {
 	SocktuatorOperationRegistry socktuatorOperations(SocktuatorEndpointsSupplier endpoints) {
 		return new SocktuatorOperationRegistry(endpoints);
 	}
-	
-	@ConditionalOnProperty(name = "socktuator.socket.server.enabled")
+
+	//TODO: attach an appropriate 'ConditionalOn', and support autoconfiguration.
 	@Bean
-	SimpleSocketServer socketActuatorServer(SocktuatorServerProperties props, SocktuatorOperationRegistry endpoints) {
-		return new SimpleSocketServer(props, endpoints); 
+	SimpleSocketServerBootstrap socketServerBootstrap(SocktuatorServerProperties props, SocktuatorOperationRegistry endpoints) {
+		return new SimpleSocketServerBootstrap(props, endpoints); 
 	}
 	
 	@Bean

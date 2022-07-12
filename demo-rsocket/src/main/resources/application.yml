@@ -1,12 +1,13 @@
 socktuator:
   rsocket:
-    server:
+    servers:
       tanzu:
         enabled: true
         #port: 7001
   socket:
-    server:
-      enabled: true
+    servers:
+      tanzu:
+        enabled: true
       
 #########################################
 # The below is not needed for socktuator

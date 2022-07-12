@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties("socktuator.rsocket")
 public class RSocktuatorProperties {
 	
-	private final Map<String, Server> server = new HashMap<>();
+	private final Map<String, Server> servers = new HashMap<>();
 	
 	public static class Server {
 		
@@ -56,8 +56,8 @@ public class RSocktuatorProperties {
 		
 	}
 
-	public Map<String, Server> getServer() {
-		return server;
+	public Map<String, Server> getServers() {
+		return servers;
 	}
 	
 }

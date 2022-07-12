@@ -35,13 +35,13 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 	private static final Logger log = LoggerFactory.getLogger(SimpleSocketServer.class);
 	private final ThreadPoolTaskScheduler scheduler = TaskSchedConf.get();
 
-	private final SocktuatorServerProperties props;
+	private final SocktuatorServerProperties.Server props;
 	private final ObjectMapper mapper = SharedObjectMapper.get();
 	private ServerSocket serverSocket;
 	private final SocktuatorOperationRegistry operationsIdx;
 
 	public SimpleSocketServer(
-			SocktuatorServerProperties props,
+			SocktuatorServerProperties.Server props,
 			SocktuatorOperationRegistry operationsIdx
 	) {
 		this.props = props;
@@ -52,6 +52,7 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 	public void afterPropertiesSet() throws Exception {
 		if (props.isEnabled()) {
 			serverSocket = new ServerSocket(props.getPort());
+			log.info("Starting SimpleSocketServer on port {}", props.getPort());
 			scheduler.execute(this::dispatchRequests);
 		} else {
 			log.warn("Possible (auto)config bug: this bean should not exist server is disabled ");
@@ -119,6 +120,15 @@ public class SimpleSocketServer implements InitializingBean, DisposableBean {
 		} finally {
 			serverSocket = null;
 		}
+	}
+
+	public boolean isRunning() {
+		return serverSocket!=null;
+	}
+
+	public void start() {
+		// TODO Auto-generated method stub
+		
 	}
 	
 	
