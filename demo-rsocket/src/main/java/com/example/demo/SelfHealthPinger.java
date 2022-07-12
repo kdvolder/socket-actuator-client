@@ -44,22 +44,21 @@ public class SelfHealthPinger {
 		Mono.empty()
 		.then(
 				client.healthForPath("ping")
-				.flatMap(printAsJson("health.ping"))
-		).then(
+				.flatMap(printAsJson("health.ping")))
+		.then(
 				client.getEndpointMetadata()
-				.flatMap(printAsJson("ops"))
-		).then(
+				.flatMap(printAsJson("ops")))
+		.then(
 				client.health()
-				.flatMap(printAsJson("health"))
-		).then(
+				.flatMap(printAsJson("health")))
+		.then(
 				client.call("metrics.metric", Map.of(
 						"requiredMetricName", "jvm.memory.used",
 						"tag", List.of("area:heap")
 				))
-				.flatMap(printAsJson("metric"))
-		).then(
-				Mono.delay(Duration.ofSeconds(5))
-		)
+				.flatMap(printAsJson("metric")))
+		.then(
+				Mono.delay(Duration.ofSeconds(5)))
 		.repeat()
 		.subscribe();
 	}
