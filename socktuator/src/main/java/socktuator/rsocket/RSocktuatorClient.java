@@ -6,11 +6,13 @@ import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.util.MimeTypeUtils;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.util.retry.Retry;
 import socktuator.api.SocktuatorClient;
@@ -44,10 +46,20 @@ public class RSocktuatorClient implements SocktuatorClient {
 	@Override
 	public Mono<Object> call(String operationId, Map<String, Object> params) {
 		return requestor
-			.route(RSocktuatorRoutes.ACTUATOR)
+			.route(RSocktuatorRoutes.ACTUATOR_JSON_SINGLE)
 			.data(new Request(operationId, params))
 			.retrieveMono(Object.class)
 			.timeout(so_timeout);
+	}
+
+
+	@Override
+	public Flux<DataBuffer> callForBytes(String operationId, Map<String, Object> params) {
+		return requestor
+				.route(RSocktuatorRoutes.ACTUATOR_BYTE_STREAM)
+				.data(new Request(operationId, params))
+				.retrieveFlux(DataBuffer.class)
+				.timeout(so_timeout);
 	}
 
 }

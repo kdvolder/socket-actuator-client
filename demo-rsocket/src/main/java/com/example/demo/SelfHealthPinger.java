@@ -1,11 +1,11 @@
 package com.example.demo;
 
-import java.net.InetSocketAddress;
 import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -15,29 +15,13 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import reactor.core.publisher.Mono;
 import socktuator.api.SocktuatorClient;
-import socktuator.config.RSocktuatorProperties;
-import socktuator.config.SocktuatorServerProperties;
-import socktuator.socket.SimpleSocketClient;
 
 @Component
 public class SelfHealthPinger {
 
+	@Autowired
 	SocktuatorClient client;
 	ObjectMapper mapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
-	
-	public SelfHealthPinger(RSocktuatorProperties rsocketProps, SocktuatorServerProperties plainSocket) {
-		SocktuatorServerProperties.Server someServer = plainSocket.getServers().values().iterator().next();
-		client = new SimpleSocketClient(
-		 		new InetSocketAddress(someServer.getHost(), someServer.getPort()),
-		 		Duration.ofMillis(someServer.getTimeout())
-		);
-		 
-//		Server someServer = rsocketProps.getServer().values().iterator().next();
-//		client = new RSocktuatorClient(
-//				new InetSocketAddress(someServer.getHost(), someServer.getPort()),
-//				someServer.getTimeout()
-//		);
-	}
 	
 	@EventListener(ApplicationReadyEvent.class)
 	void selfHealthCheck() throws Exception {

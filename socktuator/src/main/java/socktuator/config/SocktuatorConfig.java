@@ -8,17 +8,19 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.endpoint.EndpointFilter;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.ParameterValueMapper;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 
+import socktuator.debug.ActuatorEndpointPrinter;
 import socktuator.discovery.ExposableSocktuatorEndpoint;
 import socktuator.discovery.SocktuatorEndpointDiscoverer;
 import socktuator.discovery.SocktuatorEndpointsSupplier;
 import socktuator.discovery.SocktuatorOperationRegistry;
+import socktuator.endpoints.ResourceEndpoint;
 import socktuator.rsocket.RSocktuatorServerBootstrap;
 import socktuator.socket.SimpleSocketServerBootstrap;
 
@@ -26,6 +28,10 @@ import socktuator.socket.SimpleSocketServerBootstrap;
 @EnableConfigurationProperties({
 	SocktuatorServerProperties.class,
 	RSocktuatorProperties.class
+})
+@ComponentScan(basePackageClasses = {
+		socktuator.endpoints.ResourceEndpoint.class,
+		ActuatorEndpointPrinter.class
 })
 public class SocktuatorConfig {
 	
@@ -36,18 +42,24 @@ public class SocktuatorConfig {
 	}	
 	
 	@Bean
+	ResourceEndpoint resourceEndpoint(ApplicationContext ctx) {
+		return new ResourceEndpoint(ctx);
+	}
+	
+	@Bean
 	SocktuatorOperationRegistry socktuatorOperations(SocktuatorEndpointsSupplier endpoints) {
 		return new SocktuatorOperationRegistry(endpoints);
 	}
 
 	//TODO: attach an appropriate 'ConditionalOn', and support autoconfiguration.
 	@Bean
-	SimpleSocketServerBootstrap socketServerBootstrap(SocktuatorServerProperties props, SocktuatorOperationRegistry endpoints) {
+	SimpleSocketServerBootstrap socktuatorServerBootstrap(SocktuatorServerProperties props, SocktuatorOperationRegistry endpoints) {
 		return new SimpleSocketServerBootstrap(props, endpoints); 
 	}
 	
+	//TODO: attach an appropriate 'ConditionalOn', and support autoconfiguration.
 	@Bean
-	RSocktuatorServerBootstrap rsocktuatorServer(
+	RSocktuatorServerBootstrap rsocktuatorServerBootstrap(
 			RSocktuatorProperties props, 
 			Optional<ReactorResourceFactory> resourceFactory, 
 			SocktuatorOperationRegistry operations

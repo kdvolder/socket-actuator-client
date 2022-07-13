@@ -2,7 +2,13 @@ package socktuator.dto;
 
 import java.util.Map;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+
 public class Request {
+
+	//TODO: Consider making Request generic with a type parameter that
+	// reflects the type of Response expected from a request.
+
 	String op;
 	Map<String, Object> params;
 	public Request() {}
@@ -22,4 +28,14 @@ public class Request {
 	public void setOp(String op) {
 		this.op = op;
 	}
+	
+	@Override
+	public String toString() {
+		try {
+			return SharedObjectMapper.get().writeValueAsString(this);
+		} catch (JsonProcessingException e) {
+			return super.toString();
+		}
+	}
+	
 }

@@ -12,10 +12,12 @@ import java.util.Map;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import reactor.core.scheduler.Scheduler;
 import reactor.core.scheduler.Schedulers;
@@ -77,5 +79,10 @@ public class SimpleSocketClient implements SocktuatorClient {
 	public Mono<OperationMetadata[]> getEndpointMetadata() {
 		return call("actuator.actuator", Map.of())
 		.map(untyped_resp -> mapper.convertValue(untyped_resp, OperationMetadata[].class));
+	}
+
+	@Override
+	public Flux<DataBuffer> callForBytes(String operationId, Map<String, Object> params) {
+		throw new UnsupportedOperationException("Not implemented");
 	}
 }
