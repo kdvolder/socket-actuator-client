@@ -47,7 +47,7 @@ public @interface SocktuatorEndpoint {
 	 */
 	@AliasFor(annotation = Endpoint.class)
 	String id();
-
+	
 	/**
 	 * If the endpoint should be enabled or disabled by default.
 	 * @return {@code true} if the endpoint is enabled by default

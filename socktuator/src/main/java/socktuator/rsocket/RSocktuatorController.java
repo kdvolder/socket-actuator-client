@@ -1,5 +1,7 @@
 package socktuator.rsocket;
 
+import java.util.HashMap;
+
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.core.codec.ResourceEncoder;
@@ -15,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import socktuator.discovery.SocktuatorOperation;
+import socktuator.discovery.SocktuatorOperationParameter;
 import socktuator.discovery.SocktuatorOperationRegistry;
 import socktuator.dto.Request;
 
@@ -34,7 +37,7 @@ public class RSocktuatorController {
 	// From what I have explored and understood so far, this handler logic uses reflection to decide behavior based on
 	// the return type of a method (rather than the actual run-time type of the returned object).
 	// So this means we have to create a different handler method here for each different return type we want to support.
-	
+
 	private SocktuatorOperationRegistry operations;
 	private DataBufferFactory dataBufferFactory;
 
@@ -51,12 +54,25 @@ public class RSocktuatorController {
 		}
 		return Mono.fromCallable(() -> {
 			try {
-				return op.invoke(new InvocationContext(SecurityContext.NONE, req.getParams()));
+				return op.invoke(createInvocationContext(req, op));
 			} catch (Throwable e) {
 				e.printStackTrace();
 				throw e;
 			}
 		});
+	}
+	
+	protected InvocationContext createInvocationContext(Request req, SocktuatorOperation op) {
+		HashMap<String, Object> paramValues = new HashMap<>(req.getParams());
+		for (SocktuatorOperationParameter formalParam : op.getParameters()) {
+			if (formalParam.isMandatory() && !paramValues.containsKey(formalParam.getName())) {
+				//missing required param. Let's supply a default if it makes sense
+				if (formalParam.getType().equals(boolean.class) || formalParam.getType().equals(Boolean.class)) {
+					paramValues.put(formalParam.getName(), false);
+				}
+			}
+		}
+		return new InvocationContext(SecurityContext.NONE, paramValues);
 	}
 	
 	@MessageMapping(RSocktuatorRoutes.ACTUATOR_BYTE_STREAM)
@@ -68,7 +84,7 @@ public class RSocktuatorController {
 		//TODO: Perhaps here we could  (should!) borrow the framework machinery for handling returned data serialization. 
 		// instead doing something custom for Resource only.
 		if (Resource.class.isAssignableFrom(op.getOutputType())) {
-			return Mono.fromCallable(() -> op.invoke(new InvocationContext(SecurityContext.NONE, req.getParams())))
+			return Mono.fromCallable(() -> op.invoke(createInvocationContext(req, op)))
 					.cast(Resource.class)
 					.flatMapMany(r -> DataBufferUtils.read(r, dataBufferFactory, ResourceEncoder.DEFAULT_BUFFER_SIZE));
 		} else {

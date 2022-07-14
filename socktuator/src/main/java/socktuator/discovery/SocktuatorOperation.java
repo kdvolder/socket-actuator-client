@@ -11,5 +11,6 @@ public interface SocktuatorOperation extends Operation {
 	Class<?> getOutputType();
 	SocktuatorOperationParameter[] getParameters();
 	List<String> getProduces();
+	SocktuatorOperation processAlias();
 	
 }

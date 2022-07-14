@@ -24,16 +24,21 @@ import org.springframework.boot.actuate.endpoint.annotation.DiscoveredOperationM
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameters;
 
+import socktuator.util.StringUtil;
+
 public class DiscoveredSocktuatorOperation extends AbstractDiscoveredOperation implements SocktuatorOperation {
 
+	private static final String SOCKTUATOR_PREFIX = "socktuator.";
 	private EndpointId endpointId;
 	private DiscoveredOperationMethod operationMethod;
 	private SocktuatorOperationParameter[] parameters;
+	private OperationInvoker invoker;
 
 	public DiscoveredSocktuatorOperation(EndpointId endpointId, DiscoveredOperationMethod operationMethod, OperationInvoker invoker) {
 		super(operationMethod, invoker);
 		this.endpointId = endpointId;
 		this.operationMethod = operationMethod;
+		this.invoker = invoker;
 		
 		Parameter[] methodParams = operationMethod.getMethod().getParameters();
 		OperationParameters _params = operationMethod.getParameters();
@@ -45,7 +50,7 @@ public class DiscoveredSocktuatorOperation extends AbstractDiscoveredOperation i
 
 	@Override
 	public String getName() {
-		return endpointId.toString() + "." + operationMethod.getMethod().getName();
+		return endpointId + "." + operationMethod.getMethod().getName();
 	}
 
 	@Override
@@ -66,6 +71,20 @@ public class DiscoveredSocktuatorOperation extends AbstractDiscoveredOperation i
 	@Override
 	public EndpointId getEndpoint() {
 		return endpointId;
+	}
+
+	@Override
+	public SocktuatorOperation processAlias() {
+		if (endpointId.toString().startsWith(SOCKTUATOR_PREFIX)) {
+			//special prefix to avoid name conflicts for socktuator specific endpoint that are meant to replace web-only endpoints.
+			//here we remove the prefix, this is used only in context where only socktuator operations and endpoints exist.
+			return new DiscoveredSocktuatorOperation(
+					EndpointId.of(StringUtil.removePrefix(SOCKTUATOR_PREFIX, endpointId.toString())),
+					operationMethod,
+					invoker
+			);
+		}
+		return this;
 	}
 
 }

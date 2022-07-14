@@ -83,6 +83,11 @@ public class SocktuatorOperationRegistry {
 		public List<String> getProduces() {
 			return null;
 		}
+
+		@Override
+		public SocktuatorOperation processAlias() {
+			return this;
+		}
 	};
 
 	public SocktuatorOperationRegistry(SocktuatorEndpointsSupplier endpointSupplier) {
@@ -90,6 +95,7 @@ public class SocktuatorOperationRegistry {
 		for (ExposableSocktuatorEndpoint ep : endpoints) {
 			Collection<SocktuatorOperation> ops = ep.getOperations();
 			for (SocktuatorOperation op : ops) {
+				op = op.processAlias();
 				String name = op.getName();
 				Assert.isTrue(!operationsIdx.containsKey(name), "Duplicate operation with name: "+name);
 				operationsIdx.put(name, op);
@@ -97,7 +103,6 @@ public class SocktuatorOperationRegistry {
 			}
 		}
 		operationsIdx.put(getOperationsMetadataOperation.getName(), getOperationsMetadataOperation);
-		
 	}
 
 	public SocktuatorOperation get(String op) {

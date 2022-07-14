@@ -37,4 +37,11 @@ public class DiscoveredSocktuatorOperationParameter implements SocktuatorOperati
 		return s==null ? null : s.match();
 	}
 
+	@Override
+	public String toString() {
+		return "SocktuatorOperationParameter("+getName()+ " : "+getType().getSimpleName()+")";
+	}
+
+	
+	
 }

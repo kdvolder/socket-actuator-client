@@ -20,7 +20,7 @@ public class RSocktuatorProperties {
 		private int port = 7123;
 		private String host = "localhost";
 		private boolean enabled;
-		private Duration timeout = Duration.ofSeconds(5);
+		private Duration timeout = Duration.ofSeconds(50); //need more time than 5 secs for heapdump
 
 		public int getPort() {
 			return port;

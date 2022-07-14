@@ -21,6 +21,7 @@ import socktuator.discovery.SocktuatorEndpointDiscoverer;
 import socktuator.discovery.SocktuatorEndpointsSupplier;
 import socktuator.discovery.SocktuatorOperationRegistry;
 import socktuator.endpoints.ResourceEndpoint;
+import socktuator.endpoints.SocktuatorHeapEndpoint;
 import socktuator.rsocket.RSocktuatorServerBootstrap;
 import socktuator.socket.SimpleSocketServerBootstrap;
 
@@ -40,6 +41,11 @@ public class SocktuatorConfig {
 	public SocktuatorConfig(ApplicationContext applicationContext) {
 		this.applicationContext = applicationContext;
 	}	
+	
+	@Bean
+	SocktuatorHeapEndpoint heapDumpEndpoint() {
+		return new SocktuatorHeapEndpoint();
+	}
 	
 	@Bean
 	ResourceEndpoint resourceEndpoint(ApplicationContext ctx) {
@@ -67,13 +73,13 @@ public class SocktuatorConfig {
 		return new RSocktuatorServerBootstrap(props, operations, resourceFactory);
 	}
 
-	@Bean
-	public SocktuatorEndpointDiscoverer socktuatorAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
-			ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
-			ObjectProvider<EndpointFilter<ExposableSocktuatorEndpoint>> filters) {
-		return new SocktuatorEndpointDiscoverer(this.applicationContext, parameterValueMapper,
-				invokerAdvisors.orderedStream().collect(Collectors.toList()),
-				filters.orderedStream().collect(Collectors.toList()));
-	}
+    @Bean
+    SocktuatorEndpointDiscoverer socktuatorAnnotationEndpointDiscoverer(ParameterValueMapper parameterValueMapper,
+            ObjectProvider<OperationInvokerAdvisor> invokerAdvisors,
+            ObjectProvider<EndpointFilter<ExposableSocktuatorEndpoint>> filters) {
+        return new SocktuatorEndpointDiscoverer(this.applicationContext, parameterValueMapper,
+                invokerAdvisors.orderedStream().collect(Collectors.toList()),
+                filters.orderedStream().collect(Collectors.toList()));
+    }
 
 }
