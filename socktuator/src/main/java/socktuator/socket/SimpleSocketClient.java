@@ -13,6 +13,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.buffer.DataBuffer;
+import org.springframework.util.MimeType;
 import org.springframework.util.StreamUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -82,7 +83,7 @@ public class SimpleSocketClient implements SocktuatorClient {
 	}
 
 	@Override
-	public Flux<DataBuffer> callForBytes(String operationId, Map<String, Object> params) {
+	public Flux<DataBuffer> callForBytes(String operationId, MimeType mimeType, Map<String, Object> params) {
 		throw new UnsupportedOperationException("Not implemented");
 	}
 }

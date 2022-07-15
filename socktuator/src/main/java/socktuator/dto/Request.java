@@ -2,6 +2,8 @@ package socktuator.dto;
 
 import java.util.Map;
 
+import org.springframework.util.MimeType;
+
 import com.fasterxml.jackson.core.JsonProcessingException;
 
 public class Request {
@@ -11,6 +13,9 @@ public class Request {
 
 	String op;
 	Map<String, Object> params;
+	
+	private String mimeType;
+	
 	public Request() {}
 	public Request(String op, Map<String, Object>  params) {
 		this.op = op;
@@ -37,5 +42,14 @@ public class Request {
 			return super.toString();
 		}
 	}
-	
+	public String getMimeType() {
+		return mimeType;
+	}
+	public void setMimeType(String mimeType) {
+		this.mimeType = mimeType;
+	}
+	public Request withMimeType(MimeType mimeType) {
+		setMimeType(mimeType.toString());
+		return this;
+	}
 }

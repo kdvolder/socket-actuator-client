@@ -1,6 +1,8 @@
 package com.example.demo;
 
-import java.nio.charset.StandardCharsets;
+import java.io.File;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -14,29 +16,30 @@ import org.springframework.util.MimeTypeUtils;
 
 import socktuator.api.SocktuatorClient;
 
-@Component
-public class SampleResourceDumper {
+//@Component
+public class SampleHeapDumper {
 
-	private static final Logger log = LoggerFactory.getLogger(SampleResourceDumper.class);
+	private static final Logger log = LoggerFactory.getLogger(SampleHeapDumper.class);
 
 	@Autowired
 	SocktuatorClient client;
 	
 	@EventListener(ApplicationReadyEvent.class)
 	void dumpit() throws Exception {
-		DataBufferUtils.join(
-				client.callForBytes("resource.get", MimeTypeUtils.TEXT_PLAIN, Map.of("location", "/sample.txt"))
+		File dumpFile = new File("sample-heapdump.hprof").getAbsoluteFile();
+		DataBufferUtils.write(client.callForBytes("heapdump.dump", MimeTypeUtils.APPLICATION_OCTET_STREAM, Map.of()),
+				dumpFile.toPath(),
+				StandardOpenOption.CREATE
 		)
+		.thenReturn("ok")
 		.subscribe(
-			result -> {
-				System.out.println("Received data:");
-				System.out.println("-----------------");
-				System.out.println(result.toString(StandardCharsets.UTF_8));
-				System.out.println("-----------------");
+			success -> {
+				System.out.println("Hepadump written to "+dumpFile);
 			}, 
 			error -> {
-				log.error("",error);
-			});
+				error.printStackTrace();
+			}
+		);
 	}
 
 

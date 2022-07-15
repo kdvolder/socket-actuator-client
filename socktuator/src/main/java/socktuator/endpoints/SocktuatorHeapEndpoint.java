@@ -18,9 +18,10 @@ public class SocktuatorHeapEndpoint {
 	
 	@ReadOperation(produces = {MimeTypeUtils.APPLICATION_OCTET_STREAM_VALUE})
 	public Resource dump(Boolean live) throws IOException {
-		WebEndpointResponse<Resource> webResponse = heapDumper.heapDump(live);
+		WebEndpointResponse<Resource> webResponse = heapDumper.heapDump(true);
 		Resource resource = webResponse.getBody();
 		if (resource!=null) {
+			System.out.println("heapdump size "+resource.contentLength());
 			return resource;
 		} else {
 			throw new IOException("No heap dump found. HttpStatus = "+webResponse.getStatus());

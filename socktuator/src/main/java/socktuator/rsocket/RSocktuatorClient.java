@@ -10,6 +10,7 @@ import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.codec.json.Jackson2JsonDecoder;
 import org.springframework.http.codec.json.Jackson2JsonEncoder;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 import reactor.core.publisher.Flux;
@@ -54,12 +55,11 @@ public class RSocktuatorClient implements SocktuatorClient {
 
 
 	@Override
-	public Flux<DataBuffer> callForBytes(String operationId, Map<String, Object> params) {
+	public Flux<DataBuffer> callForBytes(String operationId, MimeType mimeType, Map<String, Object> params) {
 		return requestor
 				.route(RSocktuatorRoutes.ACTUATOR_BYTE_STREAM)
-				.data(new Request(operationId, params))
-				.retrieveFlux(DataBuffer.class)
-				.timeout(so_timeout);
+				.data(new Request(operationId, params).withMimeType(mimeType))
+				.retrieveFlux(DataBuffer.class);
 	}
 
 }
