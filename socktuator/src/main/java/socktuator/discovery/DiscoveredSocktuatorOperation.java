@@ -28,7 +28,7 @@ import socktuator.util.StringUtil;
 
 public class DiscoveredSocktuatorOperation extends AbstractDiscoveredOperation implements SocktuatorOperation {
 
-	private static final String SOCKTUATOR_PREFIX = "socktuator.";
+	private static final String SOCKTUATOR_PREFIX = "socktuator."; //TODO: spring boot doesn't like the '.'.
 	private EndpointId endpointId;
 	private DiscoveredOperationMethod operationMethod;
 	private SocktuatorOperationParameter[] parameters;

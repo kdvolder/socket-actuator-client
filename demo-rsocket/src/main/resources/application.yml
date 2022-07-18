@@ -1,3 +1,10 @@
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+        exclude:
+        - beans
 socktuator:
   rsocket:
     servers:
@@ -8,19 +15,26 @@ socktuator:
     servers:
       tanzu:
         enabled: true
+  web:
+    servers:
+      tanzu:
+        port: 9988
+      nieraj:
+        port: 9977
+    
       
 #########################################
 # The below is not needed for socktuator
 # But it is convenient to compare socktuator
 # against the actuator web endpoints
-management:
-  endpoints:
-    web:
-      exposure:
-        include: "*"  
-  endpoint:
-    env:
-      post:
-        enabled: true
-    health:
-      show-details: always
+#management:
+#  endpoints:
+#    web:
+#      exposure:
+#        include: "*"  
+#  endpoint:
+#    env:
+#      post:
+#        enabled: true
+#    health:
+#      show-details: always

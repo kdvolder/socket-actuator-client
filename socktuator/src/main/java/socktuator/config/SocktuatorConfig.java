@@ -24,11 +24,13 @@ import socktuator.endpoints.ResourceEndpoint;
 import socktuator.endpoints.SocktuatorHeapEndpoint;
 import socktuator.rsocket.RSocktuatorServerBootstrap;
 import socktuator.socket.SimpleSocketServerBootstrap;
+import socktuator.web.SocktuatorWebBootstrap;
 
 @Configuration
 @EnableConfigurationProperties({
 	SocktuatorServerProperties.class,
-	RSocktuatorProperties.class
+	RSocktuatorProperties.class,
+	SocktuatorWebProperties.class
 })
 @ComponentScan(basePackageClasses = {
 		socktuator.endpoints.ResourceEndpoint.class,
@@ -81,5 +83,10 @@ public class SocktuatorConfig {
                 invokerAdvisors.orderedStream().collect(Collectors.toList()),
                 filters.orderedStream().collect(Collectors.toList()));
     }
-
+    
+	//TODO: attach an appropriate 'ConditionalOn', and support autoconfiguration.
+    @Bean
+	SocktuatorWebBootstrap sideApplication(ApplicationContext hostAppCtx, SocktuatorWebProperties props) {
+		return new SocktuatorWebBootstrap(hostAppCtx, props);
+	}
 }

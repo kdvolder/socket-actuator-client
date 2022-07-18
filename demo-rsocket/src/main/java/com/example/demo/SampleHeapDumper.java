@@ -1,7 +1,6 @@
 package com.example.demo;
 
 import java.io.File;
-import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Map;
 
@@ -11,7 +10,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.io.buffer.DataBufferUtils;
-import org.springframework.stereotype.Component;
 import org.springframework.util.MimeTypeUtils;
 
 import socktuator.api.SocktuatorClient;
@@ -34,7 +32,7 @@ public class SampleHeapDumper {
 		.thenReturn("ok")
 		.subscribe(
 			success -> {
-				System.out.println("Hepadump written to "+dumpFile);
+				log.info("Heapdump written to {}", dumpFile);
 			}, 
 			error -> {
 				error.printStackTrace();

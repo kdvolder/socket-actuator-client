@@ -70,6 +70,13 @@
 			<artifactId>spring-web</artifactId>
 		</dependency>
 		<!-- END: for RSocket support only -->
+		
+		<!-- BEG: for experimental 'independent web context' only -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+		<!-- END: for experimental 'independent web context' only -->
 
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
