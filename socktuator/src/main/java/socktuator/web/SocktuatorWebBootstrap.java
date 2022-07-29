@@ -29,9 +29,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.event.ContextStartedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
-import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.StandardEnvironment;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 
@@ -39,11 +36,9 @@ import socktuator.config.SocktuatorWebProperties;
 import socktuator.config.SocktuatorWebProperties.WebServerProps;
 
 /**
- * Start up a 'independent' application context that consumes unfiltered WebEndpoint
+ * Start up a 'independent' application context(s) that consume unfiltered WebEndpoint
  */
 public class SocktuatorWebBootstrap implements SmartLifecycle {
-	
-	//TODO: At present this is limited to a single 'instance' so not multiple independently configured ones.
 	
 	private List<AnnotationConfigServletWebServerApplicationContext> contexts;
 	
